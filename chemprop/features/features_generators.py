@@ -120,7 +120,7 @@ try:
 
         return features
 except ImportError:
-    @register_features_generator('rdkit_2d')
+    @register_features_generator('rdkit_2d' )
     def rdkit_2d_features_generator(mol: Molecule) -> np.ndarray:
         """Mock implementation raising an ImportError if descriptastorus cannot be imported."""
         raise ImportError('Failed to import descriptastorus. Please install descriptastorus '

@@ -287,7 +287,9 @@ class MPN(nn.Module):
         if self.use_input_features:
             if len(features_batch.shape) == 1:
                 features_batch = features_batch.view(1, -1)
-
+            if len(output.shape) < len(features_batch.shape):
+              features_batch = features_batch.squeeze(1)
+            print(output.shape, features_batch.shape)
             output = torch.cat([output, features_batch], dim=1)
 
         return output

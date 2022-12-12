@@ -114,6 +114,8 @@ class NoUncertaintyPredictor(UncertaintyPredictor):
         return "no_uncertainty_method"
 
     def calculate_predictions(self):
+        print(len(list(self.models)))
+        print(len(list(self.scalers)))
         for i, (model, scaler_list) in enumerate(
             tqdm(zip(self.models, self.scalers), total=self.num_models)
         ):

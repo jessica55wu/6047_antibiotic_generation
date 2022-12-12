@@ -534,11 +534,11 @@ class TrainArgs(CommonArgs):
             raise ValueError('In reaction_solvent mode, --number_of_molecules 2 must be specified.')
 
         # Process SMILES columns
-        self.smiles_columns = chemprop.data.utils.preprocess_smiles_columns(
-            path=self.data_path,
-            smiles_columns=self.smiles_columns,
-            number_of_molecules=self.number_of_molecules,
-        )
+        # self.smiles_columns = chemprop.data.utils.preprocess_smiles_columns(
+        #     path=self.data_path,
+        #     smiles_columns=self.smiles_columns,
+        #     number_of_molecules=self.number_of_molecules,
+        # )
 
         # Load config file
         if self.config_path is not None:
@@ -739,7 +739,7 @@ class TrainArgs(CommonArgs):
 class PredictArgs(CommonArgs):
     """:class:`PredictArgs` includes :class:`CommonArgs` along with additional arguments used for predicting with a Chemprop model."""
 
-    test_path: str
+    test_path: str 
     """Path to CSV file containing testing data for which predictions will be made."""
     preds_path: str
     """Path to CSV file where predictions will be saved."""
@@ -804,12 +804,12 @@ class PredictArgs(CommonArgs):
         if self.uncertainty_method == 'dropout' and version.parse(torch.__version__) < version.parse('1.9.0'):
             raise ValueError('Dropout uncertainty is only supported for pytorch versions >= 1.9.0')
 
-        self.smiles_columns = chemprop.data.utils.preprocess_smiles_columns(
-            path=self.test_path,
-            smiles_columns=self.smiles_columns,
-            number_of_molecules=self.number_of_molecules,
-        )
-
+        # self.smiles_columns = chemprop.data.utils.preprocess_smiles_columns(
+        #     path=self.test_path,
+        #     smiles_columns=self.smiles_columns,
+        #     number_of_molecules=self.number_of_molecules,
+        # )
+        
         if self.checkpoint_paths is None or len(self.checkpoint_paths) == 0:
             raise ValueError('Found no checkpoints. Must specify --checkpoint_path <path> or '
                              '--checkpoint_dir <dir> containing at least one checkpoint.')

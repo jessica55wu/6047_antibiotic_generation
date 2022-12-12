@@ -230,6 +230,7 @@ def get_data(path: str,
              skip_invalid_smiles: bool = True,
              args: Union[TrainArgs, PredictArgs] = None,
              data_weights_path: str = None,
+             features = None,
              features_path: List[str] = None,
              features_generator: List[str] = None,
              phase_features_path: str = None,
@@ -291,7 +292,9 @@ def get_data(path: str,
     max_data_size = max_data_size or float('inf')
 
     # Load features
-    if features_path is not None:
+    if features is not None:
+        features_data = features
+    elif features_path is not None:
         features_data = []
         for feat_path in features_path:
             features_data.append(load_features(feat_path))  # each is num_data x num_features
@@ -440,6 +443,7 @@ def get_data(path: str,
 def get_data_from_smiles(smiles: List[List[str]],
                          skip_invalid_smiles: bool = True,
                          logger: Logger = None,
+                         features = None,
                          features_generator: List[str] = None) -> MoleculeDataset:
     """
     Converts a list of SMILES to a :class:`~chemprop.data.MoleculeDataset`.
@@ -451,14 +455,24 @@ def get_data_from_smiles(smiles: List[List[str]],
     :return: A :class:`~chemprop.data.MoleculeDataset` with all of the provided SMILES.
     """
     debug = logger.debug if logger is not None else print
+    
+    if features == None:
+      data = MoleculeDataset([
+          MoleculeDatapoint(
+              smiles=smile,
+              row=OrderedDict({'smiles': smile}),
+              features_generator=features_generator,
+          ) for smile in smiles
+      ])
+    else:
+      data = MoleculeDataset([
+          MoleculeDatapoint(
+              smiles=[smile],
+              row=OrderedDict({'smiles': smile}),
+              features=[feature],
+          ) for smile, feature in zip(smiles, features)
+      ])
 
-    data = MoleculeDataset([
-        MoleculeDatapoint(
-            smiles=smile,
-            row=OrderedDict({'smiles': smile}),
-            features_generator=features_generator
-        ) for smile in smiles
-    ])
 
     # Filter out invalid SMILES
     if skip_invalid_smiles:

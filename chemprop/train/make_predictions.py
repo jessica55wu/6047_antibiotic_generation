@@ -44,7 +44,7 @@ def load_model(args: PredictArgs, generator: bool = False):
     return args, train_args, models, scalers, num_tasks, task_names
 
 
-def load_data(args: PredictArgs, smiles: List[List[str]]):
+def load_data(args: PredictArgs, smiles: List[List[str]], features):
     """
     Function to load data from a list of smiles or a file.
 
@@ -59,7 +59,7 @@ def load_data(args: PredictArgs, smiles: List[List[str]]):
         full_data = get_data_from_smiles(
             smiles=smiles,
             skip_invalid_smiles=False,
-            features_generator=args.features_generator,
+            features=features,
         )
     else:
         full_data = get_data(
@@ -69,6 +69,7 @@ def load_data(args: PredictArgs, smiles: List[List[str]]):
             ignore_columns=[],
             skip_invalid_smiles=False,
             args=args,
+            features=features,
             store_row=not args.drop_extra_columns,
         )
 
@@ -125,6 +126,8 @@ def predict_and_save(
     test_data: MoleculeDataset,
     task_names: List[str],
     num_tasks: int,
+    features,
+    smiles,
     test_data_loader: MoleculeDataLoader,
     full_data: MoleculeDataset,
     full_to_valid_indices: dict,
@@ -326,7 +329,6 @@ def predict_and_save(
     else:
         return preds, unc
 
-
 @timeit()
 def make_predictions(
     args: PredictArgs,
@@ -389,7 +391,7 @@ def make_predictions(
 
     # Note: to get the invalid SMILES for your data, use the get_invalid_smiles_from_file or get_invalid_smiles_from_list functions from data/utils.py
     full_data, test_data, test_data_loader, full_to_valid_indices = load_data(
-        args, smiles
+        args, smiles, features
     )
 
     if args.uncertainty_method is None and (args.calibration_method is not None or args.evaluation_methods is not None):

@@ -5,7 +5,7 @@ import os
 import shutil
 import sys
 from typing import List, Tuple
-
+import numpy as np
 from tqdm import tqdm
 from tap import Tap  # pip install typed-argument-parser (https://github.com/swansonk14/typed-argument-parser)
 
@@ -111,6 +111,26 @@ def generate_and_save_features(args: Args):
     except OverflowError:
         print('Features array is too large to save as a single file. Instead keeping features as a directory of files.')
 
+def generate_features(smile_list, features_generator="rdkit_2d_normalized"):
+    """
+    Computes and saves features for a dataset of molecules as a 2D array in a .npz file.
+
+    :param args: Arguments.
+    """
+
+    # Get data and features function
+    features_generator = get_features_generator(features_generator)
+    # features_map = Pool().imap(features_generator, smile_list)
+    features_map = map(features_generator, smile_list)
+
+    try:
+        # Save all features
+        features = []
+        for i, feats in tqdm(enumerate(features_map), total=len(smile_list)):
+            features.append(np.array(feats))
+        return features
+    except OverflowError:
+        raise ValueError('Features array is too large to save as a single file. Instead keeping features as a directory of files.')
 
 if __name__ == '__main__':
     generate_and_save_features(Args().parse_args())
